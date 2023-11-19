@@ -1,18 +1,13 @@
 #include "Protocol.h"
 
-using std::cout;
-using std::array;
-using std::vector;
-using std::string;
-using std::runtime_error;
 
-string decompress(const string &Data) {
+std::string decompress(const std::string &Data) {
     auto instance = BrotliDecoderCreateInstance(nullptr, nullptr, nullptr);
     if (instance == nullptr)
         throw runtime_error("failed BrotliDecoderCreateInstance");
 
-    string result;
-    array<uint8_t, 4096> buf {};
+    std::string result;
+    std::array<uint8_t, 4096> buf{};
     size_t availableDataLen = Data.length(), availableBufLen = buf.size();
     auto *pData = (const uint8_t *) Data.c_str();
     uint8_t *pBuf = buf.data();
@@ -42,7 +37,7 @@ PackageHeaderT parsePackageHeader(const char *Buf) {
 }
 
 // 构造协议包头
-PackageHeaderT makePackageHeader(const string &Buf, WSMsgTypeE WsMsg) {
+PackageHeaderT makePackageHeader(const std::string &Buf, WSMsgTypeE WsMsg) {
     PackageHeaderT packageHeader;
     packageHeader.totalSize = htonl(WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH + Buf.length());
     packageHeader.headerLen = htons(WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH);
@@ -53,12 +48,12 @@ PackageHeaderT makePackageHeader(const string &Buf, WSMsgTypeE WsMsg) {
 }
 
 // 解析包
-vector<nlohmann::json> Protocol::parsePackageToJson(const string &Buf) {
+vector <nlohmann::json> Protocol::parsePackageToJson(const std::string &Buf) {
     vector<nlohmann::json> vJson;
     for (uint32_t scanPos = 0; scanPos < Buf.length();) {
         PackageHeaderT packageHeader = parsePackageHeader(Buf.c_str() + scanPos);
         if (packageHeader.operation == WS_OP_CONNECT_SUCCESS) {
-            vJson.push_back(nlohmann::json::parse(string {Buf.c_str() + WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH,
+            vJson.push_back(nlohmann::json::parse(std::string{Buf.c_str() + WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH,
                                                           packageHeader.totalSize -
                                                           WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH
             }));
@@ -75,7 +70,7 @@ vector<nlohmann::json> Protocol::parsePackageToJson(const string &Buf) {
                             }));
                 } else if (packageHeader.protocolVersion == WS_BODY_PROTOCOL_VERSION_NORMAL) {
                     vJson.push_back(nlohmann::json::parse(
-                            string {Buf.c_str() + scanPos + WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH,
+                            std::string{Buf.c_str() + scanPos + WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH,
                                     packageHeader.totalSize - WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH
                             }));
                 }
@@ -91,22 +86,22 @@ vector<nlohmann::json> Protocol::parsePackageToJson(const string &Buf) {
 }
 
 // 构造包
-string Protocol::makePackage(const string &Buf, WSMsgTypeE WsMsg) {
+std::string Protocol::makePackage(const std::string &Buf, WSMsgTypeE WsMsg) {
     PackageHeaderT packageHeader = makePackageHeader(Buf, WsMsg);
 
-    string str(WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH + Buf.length(), 0);
+    std::string str(WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH + Buf.length(), 0);
     memcpy((void *) str.c_str(), (void *) &packageHeader, WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH);
     memcpy((void *) (str.c_str() + WSMsgTypeE::WS_PACKAGE_HEADER_TOTAL_LENGTH), Buf.c_str(), Buf.length());
     return str;
 }
 
 // 构造验证包
-string Protocol::makeAuthenticationPackage() {
+std::string Protocol::makeAuthenticationPackage() {
     nlohmann::json nJson = {{"uid",      uid},
                             {"roomid",   realRoomID},
                             {"protover", 3},
                             {"platform", "web"},
                             {"type",     2},
                             {"key",      token}};
-    return makePackage(to_string(nJson), WSMsgTypeE::WS_OP_USER_AUTHENTICATION);
+    return makePackage(to_std::string(nJson), WSMsgTypeE::WS_OP_USER_AUTHENTICATION);
 }

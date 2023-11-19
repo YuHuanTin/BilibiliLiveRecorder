@@ -1,12 +1,3 @@
-#include <WinSock2.h>
-#include "Protocol/Protocol.h"
-#include "ImWindow/ImWindow.h"
-#include <ixwebsocket/IXNetSystem.h>
-#include <ixwebsocket/IXWebSocket.h>
-
-using std::string;
-using std::runtime_error;
-
 
 //void showDanmu(std::vector<nlohmann::json> &vJson) {
 //    for (int i = 0; i < vJson.size(); ++i) {
@@ -64,60 +55,19 @@ using std::runtime_error;
 //
 //}
 
-string requestURL(const string &Url) {
-    HttpRequestT httpRequest {Url, "get"};
-    HttpResponseT httpResponse;
-    WinhttpAPI api(httpRequest, httpResponse);
-    api.Request();
-    return httpResponse.Body;
-}
+
+
+#include <cstdio>
+#include "UtilsHelper/Interface.h"
+
 
 int main() {
-    srand(time(nullptr));
     setbuf(stdout, nullptr);
-    std::wcout.imbue(std::locale("chs"));
-
-    try {
-        ImWindow gui;
-        gui.showInputWindow();
-
-        std::cout << "A";
-
-    } catch (runtime_error &error) {
-        std::cout << "runtime error: " << error.what() << '\n';
-    }
 
 
-
-
-//    userWindow.getInput();
-//
-//    // 获取真实房间号
-//    {
-//        string responseBody = requestURL("https://api.live.bilibili.com/room/v1/Room/room_init?id=" + std::to_string(userWindow.userInput.roomID));
-//        nlohmann::json nJson = nlohmann::json::parse(responseBody);
-//
-//        userWindow.roomInfo.realRoomID = nJson["data"]["room_id"];
-//        userWindow.roomInfo.liveUpUID = nJson["data"]["uid"];
-//        userWindow.setTitle("房间真实id号: " + std::to_string(userWindow.roomInfo.realRoomID) + " 开播up uid: " +
-//                            std::to_string(userWindow.roomInfo.liveUpUID));
-//    }
-//
-//    string danmuServerHost;
-//    string danmuServerPort;
-//    string danmuServerToken;
-//    // 随机选取一个弹幕服务器
-//    {
-//        nlohmann::json nJson = nlohmann::json::parse(requestURL(
-//                "https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=" + std::to_string(userWindow.roomInfo.realRoomID) + "&type=0"));
-//        size_t index = rand() % nJson["data"]["host_list"].size();
-//        danmuServerHost = nJson["data"]["host_list"][index]["host"];
-//        danmuServerPort = to_string(nJson["data"]["host_list"][index]["wss_port"]);
-//        danmuServerToken = nJson["data"]["token"];
-//        if (userWindow.userInput.debug)
-//            userWindow.pushMsg("选取弹幕服务器: " + danmuServerHost + ":" + danmuServerPort);
-//    }
-//
+    auto websocket = Interface::start(8792912);
+    
+    
 //    // websocket part
 //    {
 //        Protocol danmuProtocol(userWindow.userInput.uid, userWindow.roomInfo.realRoomID, danmuServerToken);

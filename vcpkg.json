@@ -1,0 +1,40 @@
+{
+  "name": "bilibililiveprotocol",
+  "version-string": "1.0.0",
+  "builtin-baseline": "3715d743ac08146d9b7714085c1babdba9f262d5",
+  "dependencies": [
+    {
+      "name": "imgui",
+      "version>=": "1.89.9",
+      "features": [
+        "win32-binding",
+        "dx11-binding",
+        "docking-experimental"
+      ]
+    },
+    {
+      "name": "ixwebsocket",
+      "version>=": "11.4.4#2"
+    },
+    {
+      "name": "fmt",
+      "version>=": "10.1.1"
+    },
+    {
+      "name": "boost-locale",
+      "version>=": "1.83.0"
+    },
+    {
+      "name": "nlohmann-json",
+      "version>=": "3.11.2"
+    },
+    {
+      "name": "cpr",
+      "version>=": "1.10.5#1"
+    },
+    {
+      "name": "brotli",
+      "version>=": "1.1.0#1"
+    }
+  ]
+}

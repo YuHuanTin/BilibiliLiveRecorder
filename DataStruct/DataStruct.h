@@ -1,15 +1,7 @@
 #ifndef BILIBILILIVEPROTOCOL_DATASTRUCT_H
 #define BILIBILILIVEPROTOCOL_DATASTRUCT_H
 
-#include <WinhttpAPI.h>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>
-
-#include <brotli/decode.h>
-
-#include "../json.hpp"
+import <cstdint>;
 
 enum WSMsgTypeE {
     WS_OP_HEARTBEAT = 2,
