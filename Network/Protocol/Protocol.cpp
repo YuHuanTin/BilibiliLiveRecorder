@@ -1,28 +1,6 @@
 #include "Protocol.h"
 
 
-std::string decompress(const std::string &Data) {
-    auto instance = BrotliDecoderCreateInstance(nullptr, nullptr, nullptr);
-    if (instance == nullptr)
-        throw runtime_error("failed BrotliDecoderCreateInstance");
-
-    std::string result;
-    std::array<uint8_t, 4096> buf{};
-    size_t availableDataLen = Data.length(), availableBufLen = buf.size();
-    auto *pData = (const uint8_t *) Data.c_str();
-    uint8_t *pBuf = buf.data();
-    BrotliDecoderResult decoderResult;
-    do {
-        decoderResult = BrotliDecoderDecompressStream(instance, &availableDataLen, &pData, &availableBufLen, &pBuf,
-                                                      nullptr);
-        result.append((char *) buf.data(), buf.size() - availableBufLen);
-        availableBufLen = buf.size();
-        pBuf = buf.data();
-    } while (availableDataLen != 0 || decoderResult == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT);
-
-    BrotliDecoderDestroyInstance(instance);
-    return result;
-}
 
 // 解析协议包头
 PackageHeaderT parsePackageHeader(const char *Buf) {

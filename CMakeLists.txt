@@ -10,7 +10,10 @@ find_package(cpr CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(ixwebsocket CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(unofficial-brotli CONFIG REQUIRED)
 
+
+link_libraries(unofficial::brotli::brotlidec)
 link_libraries(nlohmann_json::nlohmann_json)
 link_libraries(ixwebsocket::ixwebsocket)
 link_libraries(imgui::imgui)
@@ -28,5 +31,9 @@ add_executable(bilibiliLiveRecorder
         UtilsHelper/ExpectionHelper/ExpectionHelper.h
         Network/WS/WSClient.cpp
         Network/WS/WSClient.h
+        Network/Protocol/ProtocolPackageMaker.cpp
+        Network/Protocol/ProtocolPackageMaker.h
+        Network/Protocol/Type/OperatorType.h
+        Network/Protocol/Type/PackageHeader.h
 )
 

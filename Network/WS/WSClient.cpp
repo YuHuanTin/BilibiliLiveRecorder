@@ -19,11 +19,11 @@ void WSClient::start() {
             throw std::runtime_error("ix::initNetSystem failed");
         }
 
-        ix::WebSocket webSocket;
-        webSocket.setUrl("wss://" + m_host + ":" + std::to_string(m_port));
-        webSocket.setPingInterval(25);
-        webSocket.setPingMessage(danmuProtocol.makePackage("[object Object]", WS_OP_HEARTBEAT),
-                                 ix::SendMessageKind::Binary);
+//        ix::WebSocket webSocket;
+//        webSocket.setUrl("wss://" + m_host + ":" + std::to_string(m_port));
+//        webSocket.setPingInterval(25);
+//        webSocket.setPingMessage(danmuProtocol.makePackage("[object Object]", WS_OP_HEARTBEAT),
+//                                 ix::SendMessageKind::Binary);
 
     } catch (std::exception &Exception) {
         ExpectionHelper::dumpExpection("ws·þÎñÆ÷Æô¶¯Ê§°Ü", Exception);

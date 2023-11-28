@@ -1,6 +1,8 @@
 #ifndef BILIBILILIVEPROTOCOL_PROTOCOL_H
 #define BILIBILILIVEPROTOCOL_PROTOCOL_H
 
+
+#include <expected>
 #include "../../DataStruct/DataStruct.h"
 
 class Protocol {
