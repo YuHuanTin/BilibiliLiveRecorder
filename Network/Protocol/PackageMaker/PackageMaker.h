@@ -10,10 +10,10 @@
 #include <vector>
 #include <expected>
 
-#include "Type/OperatorType.h"
-#include "Type/PackageHeader.h"
+#include "../Type/OperatorType.h"
+#include "../Type/PackageHeader.h"
 
-namespace ProtocolPackage {
+namespace PackageMaker {
     /**
      * to make a protocol package
      * 

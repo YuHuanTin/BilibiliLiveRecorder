@@ -70,14 +70,23 @@ auto get_live_server(uint64_t RoomID) {
 }
 
 namespace Interface {
-    std::unique_ptr<WSClient> start(uint64_t RoomID) {
+    StartResult start(uint64_t RoomID) {
         try {
             auto trueRoomID = get_room_id(RoomID);
             auto liveServer = get_live_server(trueRoomID);
 
+
             std::println("µ¯Ä»·þÎñÆ÷: {}:{}", liveServer.Host, liveServer.Port);
 
-            return std::make_unique<WSClient>(std::move(liveServer.Host), liveServer.Port, std::move(liveServer.Token));
+
+            auto websocket = std::make_unique<WSClient>();
+
+            websocket->setUrl("wss://" + liveServer.Host + ":" + std::to_string(liveServer.Port) + "/sub");
+//                    .setPingInterval(25)
+//                    .setPingMessage(Protocol::make_heartbeat_package());
+
+
+            return {std::move(websocket), trueRoomID, liveServer.Token};
         } catch (std::exception &Exception) {
             ExpectionHelper::dumpExpection("Æô¶¯Ê§°Ü", Exception, false);
         }
