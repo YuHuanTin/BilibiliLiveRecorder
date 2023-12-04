@@ -30,8 +30,8 @@ add_executable(bilibiliLiveRecorder
         Utils/Interface.h
         Utils/ExpectionHelper/ExpectionHelper.cpp
         Utils/ExpectionHelper/ExpectionHelper.h
-        Network/WS/Client/WSClient.cpp
-        Network/WS/Client/WSClient.h
+        Network/WS/Client/WebSocketCore.cpp
+        Network/WS/Client/WebSocketCore.h
         Network/Protocol/Protocol.h
         Network/Protocol/Protocol.cpp
         Network/Protocol/PackageMaker/PackageMaker.h
@@ -39,5 +39,9 @@ add_executable(bilibiliLiveRecorder
         Network/Protocol/Type/OperatorType.h
         Network/Protocol/Type/PackageHeader.h
         Network/WS/Type/ExceptionType.h
+        Network/WS/WSSClient.cpp
+        Network/WS/WSSClient.h
+        Network/Protocol/CommandParse.cpp
+        Network/Protocol/CommandParser.h
 )
 

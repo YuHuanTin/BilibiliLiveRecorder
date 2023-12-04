@@ -25,6 +25,13 @@ namespace Protocol {
     [[nodiscard]] std::vector<uint8_t> make_heartbeat_package();
 
 
+    /**
+     * parse package from DataToParse
+     * throw exception if parse failed
+     * 
+     * @param DataToParse 
+     * @return 
+     */
     std::vector<std::string> parse_packages(std::vector<uint8_t> &DataToParse);
 }
 

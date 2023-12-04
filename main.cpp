@@ -59,58 +59,62 @@
 
 #include <cstdio>
 #include <print>
-#include "UtilsHelper/Interface.h"
+#include <boost/locale.hpp>
+#include "Utils/Interface.h"
+#include "Network/Protocol/Protocol.h"
 
 int main() {
     setbuf(stdout, nullptr);
 
 
+    std::unique_ptr<WSSClient> startResult = Interface::start(213, [&startResult](const ix::WebSocketMessagePtr &msg) {
+        switch (msg->type) {
+            case ix::WebSocketMessageType::Message: {
+                std::println("recv {} bytes", msg->str.size());
 
-//    auto websocket = Interface::start(8792912);
+                std::vector<uint8_t> bufffer(msg->str.begin(), msg->str.end());
+                auto vecParseData = Protocol::parse_packages(bufffer);
+
+
+                std::println("parse message count: {}", vecParseData.size());
+                for (const auto &str: vecParseData) {
+
+                    Interface::parseCommandData(str);
+
+                    /// conv string from utf-8 to gbk
+                    auto str2 = boost::locale::conv::from_utf(str, "GBK");
+
+                    std::println("{}", str2);
+                }
+                break;
+            }
+            case ix::WebSocketMessageType::Open: {
+                std::println("Connected");
+                startResult->sendAuthentication();
+                break;
+            }
+            case ix::WebSocketMessageType::Close: {
+                std::println("Disconnected");
+                break;
+            }
+            case ix::WebSocketMessageType::Error: {
+                std::println("Error");
+                break;
+            }
+            case ix::WebSocketMessageType::Pong: {
+                std::println("Pong");
+                break;
+            }
+            case ix::WebSocketMessageType::Ping: {
+                std::println("Ping");
+                break;
+            }
+        }
+    });
+
+    std::this_thread::sleep_for(std::chrono::hours(10));
+    startResult->stop();
     
-    
-    
-//    // websocket part
-//    {
-//        Protocol danmuProtocol(userWindow.userInput.uid, userWindow.roomInfo.realRoomID, danmuServerToken);
-//        if (!ix::initNetSystem()) throw runtime_error("failed initNetSystem");
-//
-//        ix::WebSocket webSocket;
-//        webSocket.setUrl("wss://" + danmuServerHost + ":" + danmuServerPort + "/sub");
-//        webSocket.setPingInterval(25);
-//        webSocket.setPingMessage(danmuProtocol.makePackage("[object Object]", WS_OP_HEARTBEAT), ix::SendMessageKind::Binary);
-//
-//        webSocket.setOnMessageCallback([&danmuProtocol, &webSocket,&userWindow](const ix::WebSocketMessagePtr &msg) {
-//            if (msg->type == ix::WebSocketMessageType::Message) {
-//                try {
-//                    std::vector<nlohmann::json> vJson = danmuProtocol.parsePackageToJson(msg->str);
-//                    for (auto &one: vJson) {
-//                        userWindow.pushMsg(one);
-//                    }
-//                } catch (runtime_error &error) {
-//                    std::cout << "runtime error: " << error.what() << '\n';
-//                } catch (nlohmann::json::parse_error &error) {
-//                    std::cout << "Json parse error: " << error.what() << '\n';
-//                } catch (nlohmann::json::exception &exception) {
-//                    std::cout << "Json exception error: " << exception.what() << '\n';
-//                }
-//            } else if (msg->type == ix::WebSocketMessageType::Open) {
-//                std::cout << "socket reOpen\n";
-//                if (!webSocket.sendBinary(danmuProtocol.makeAuthenticationPackage()).success)
-//                    throw runtime_error("failed send auth package");
-//            } else if (msg->type == ix::WebSocketMessageType::Error) {
-//                std::cout << "Connection error: " << msg->errorInfo.reason << std::endl;
-//                webSocket.close();
-//            } else if (msg->type == ix::WebSocketMessageType::Close) {
-//                std::cout << "WebSocket Close, code: " << msg->closeInfo.code << "close msg: " << msg->closeInfo.reason << '\n';
-//            }
-//        });
-//        webSocket.start();
-//
-//        std::this_thread::sleep_for(std::chrono::hours {10});
-//
-//        webSocket.stop();
-//        ix::uninitNetSystem();
-//    }
     return 0;
+
 }

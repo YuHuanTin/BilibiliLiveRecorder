@@ -70,7 +70,8 @@ auto get_live_server(uint64_t RoomID) {
 }
 
 namespace Interface {
-    StartResult start(uint64_t RoomID) {
+
+    std::unique_ptr<WSSClient> start(uint64_t RoomID, std::function<void(const ix::WebSocketMessagePtr &)> Callback) {
         try {
             auto trueRoomID = get_room_id(RoomID);
             auto liveServer = get_live_server(trueRoomID);
@@ -79,16 +80,26 @@ namespace Interface {
             std::println("µ¯Ä»·þÎñÆ÷: {}:{}", liveServer.Host, liveServer.Port);
 
 
-            auto websocket = std::make_unique<WSClient>();
+            auto websocket = std::make_unique<WSSClient>(0, trueRoomID, liveServer.Token, "");
 
-            websocket->setUrl("wss://" + liveServer.Host + ":" + std::to_string(liveServer.Port) + "/sub");
-//                    .setPingInterval(25)
-//                    .setPingMessage(Protocol::make_heartbeat_package());
+            websocket->setUrl("wss://" + liveServer.Host + ":" + std::to_string(liveServer.Port) + "/sub")
+                    .setPingInterval(25)
+                    .setPingMessage(Protocol::make_heartbeat_package())
+                    .setMessageCallback(Callback)
+                    .start();
 
-
-            return {std::move(websocket), trueRoomID, liveServer.Token};
+            return websocket;
         } catch (std::exception &Exception) {
             ExpectionHelper::dumpExpection("Æô¶¯Ê§°Ü", Exception, false);
         }
+        return nullptr;
+    }
+
+    std::string parseCommandData(const std::string &DataToParse) {
+        auto parseResult = CommandParse::parse(DataToParse);
+        if (!parseResult) {
+            return {};
+        }
+        return parseResult.value();
     }
 } // Interface
